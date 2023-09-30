@@ -1,7 +1,6 @@
 package com.tupi.controllers;
 
 import com.tupi.data.vo.v1.PersonVO;
-import com.tupi.data.vo.v2.PersonVO2;
 import com.tupi.services.PersonServices;
 import com.tupi.utils.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +31,6 @@ public class PersonController {
         LogUtil<PersonVO> logUtil = new LogUtil<>();
         logUtil.logTudo(PersonVO);
         return service.create(PersonVO);
-    }
-
-    @PostMapping(value = "/v2", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PersonVO2 createV2(@RequestBody PersonVO2 personVO) {
-        return service.createV2(personVO);
     }
 
     @PutMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
