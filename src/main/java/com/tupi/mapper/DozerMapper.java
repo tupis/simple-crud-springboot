@@ -1,13 +1,12 @@
 package com.tupi.mapper;
 
-import com.github.dozermapper.core.DozerBeanMapper;
 import com.github.dozermapper.core.DozerBeanMapperBuilder;
 import com.github.dozermapper.core.Mapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DozzerMapper {
+public class DozerMapper {
 
     private static Mapper mapper = DozerBeanMapperBuilder.buildDefault();
 
@@ -15,7 +14,7 @@ public class DozzerMapper {
         return mapper.map(origin, destination);
     }
 
-    public static <O, D> List<D> parseListObject(List<O> origin, Class<D> destination) {
+    public static <O, D> List<D> parseListObjects(List<O> origin, Class<D> destination) {
         List<D> parsedListObject = new ArrayList<>();
 
         for (O o: origin) {
