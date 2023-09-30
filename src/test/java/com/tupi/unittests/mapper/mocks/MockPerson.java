@@ -7,9 +7,9 @@ import com.tupi.data.vo.v1.PersonVO;
 import com.tupi.models.Person;
 
 public class MockPerson {
-//    public Person mockEntity() {
-//        return mockEntity(0);
-//    }
+    public Person mockEntity() {
+        return mockEntity(0);
+    }
 
     public PersonVO mockVO() {
         return mockVO(0);
