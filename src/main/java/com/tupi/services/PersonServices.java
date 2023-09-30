@@ -1,8 +1,10 @@
 package com.tupi.services;
 
 import com.tupi.data.vo.v1.PersonVO;
+import com.tupi.data.vo.v2.PersonVO2;
 import com.tupi.exceptions.ResourceNotFoundException;
 import com.tupi.mapper.DozerMapper;
+import com.tupi.mapper.custom.PersonMapper;
 import com.tupi.models.Person;
 import com.tupi.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,10 @@ public class PersonServices {
 
     @Autowired
     private PersonRepository repository;
+
+
+    @Autowired
+    private PersonMapper mapper;
 
     public PersonVO findById(Long id) {
         logger.info("Searching for one person...");
@@ -37,6 +43,15 @@ public class PersonServices {
         Person savedPerson = repository.save(person);
 
         return DozerMapper.parseObject(savedPerson, PersonVO.class);
+    }
+
+    public PersonVO2 createV2(PersonVO2 personVO) {
+        logger.info("Creating one person in V2");
+        Person person = mapper.convertVOToEntity(personVO);
+        person.setId(null);
+        Person savedPerson = repository.save(person);
+
+        return mapper.convertEntityToVO(savedPerson);
     }
 
     public PersonVO update(Long id, PersonVO personVO) {
