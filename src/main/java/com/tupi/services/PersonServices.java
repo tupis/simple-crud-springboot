@@ -1,14 +1,12 @@
 package com.tupi.services;
 
+import com.tupi.data.vo.v1.PersonVO;
 import com.tupi.exceptions.ResourceNotFoundException;
-import com.tupi.models.Person;
 import com.tupi.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 @Service
@@ -18,38 +16,38 @@ public class PersonServices {
     @Autowired
     private PersonRepository repository;
 
-    public Person findById(Long id) {
-        logger.info("Finding one person!");
+    public PersonVO findById(Long id) {
+        logger.info("Finding one PersonVO!");
         return repository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
     }
 
-    public List<Person> findAll() {
+    public List<PersonVO> findAll() {
         return repository.findAll();
     }
 
-    public Person create(Person person) {
-        person.setId(null);
-        return repository.save(person);
+    public PersonVO create(PersonVO PersonVO) {
+        PersonVO.setId(null);
+        return repository.save(PersonVO);
     }
 
-    public Person update(Long id, Person person) {
-        Person entity = repository
+    public PersonVO update(Long id, PersonVO PersonVO) {
+        PersonVO entity = repository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No record found for this ID!"));
 
-        entity.setAddress(person.getAddress());
-        entity.setFirstName(person.getFirstName());
-        entity.setLastName(person.getLastName());
-        entity.setGender(person.getGender());
+        entity.setAddress(PersonVO.getAddress());
+        entity.setFirstName(PersonVO.getFirstName());
+        entity.setLastName(PersonVO.getLastName());
+        entity.setGender(PersonVO.getGender());
 
         return repository.save(entity);
     }
 
     public String delete(Long id) {
         repository.deleteById(id);
-        return "Person deleted!";
+        return "PersonVO deleted!";
     }
 
 }
