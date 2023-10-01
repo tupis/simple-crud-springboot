@@ -6,7 +6,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@JsonPropertyOrder({"id", "address", "firstName", "surName", "gender"})
 public class PersonVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -16,7 +15,6 @@ public class PersonVO implements Serializable {
     }
     private Long id;
     private String firstName;
-    @JsonProperty("surName")
     private String lastName;
     private String address;
     private String gender;
