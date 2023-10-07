@@ -1,5 +1,6 @@
 package com.tupi.services;
 
+import com.tupi.controllers.PersonController;
 import com.tupi.data.vo.v1.PersonVO;
 import com.tupi.exceptions.ResourceNotFoundException;
 import com.tupi.mapper.DozerMapper;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @Service
 public class PersonServices {
     private final Logger logger = Logger.getLogger(PersonServices.class.getName());
@@ -21,13 +25,31 @@ public class PersonServices {
     public PersonVO findById(Long id) {
         logger.info("Searching for one person...");
         Person person = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-        return DozerMapper.parseObject(person, PersonVO.class);
+        PersonVO vo = DozerMapper.parseObject(person, PersonVO.class);
+
+        vo.add(
+                linkTo(
+                        methodOn(PersonController.class).findById(id)
+                ).withSelfRel()
+        );
+
+        return vo;
     }
 
     public List<PersonVO> findAll() {
         logger.info("Searching for all persons");
         List<Person> persons = repository.findAll();
-        return DozerMapper.parseListObjects(persons, PersonVO.class);
+        List<PersonVO> vos = DozerMapper.parseListObjects(persons, PersonVO.class);
+
+        vos.stream().forEach(p ->
+                p.add(
+                    linkTo(
+                            methodOn(PersonController.class).findById(p.getKey())
+                    ).withSelfRel()
+                )
+        );
+
+        return vos;
     }
 
     public PersonVO create(PersonVO personVO) {
@@ -36,7 +58,15 @@ public class PersonServices {
         person.setId(null);
         Person savedPerson = repository.save(person);
 
-        return DozerMapper.parseObject(savedPerson, PersonVO.class);
+        PersonVO vo = DozerMapper.parseObject(savedPerson, PersonVO.class);
+
+        vo.add(
+                linkTo(
+                        methodOn(PersonController.class).findById(savedPerson.getId())
+                ).withSelfRel()
+        );
+
+        return vo;
     }
 
     public PersonVO update(Long id, PersonVO personVO) {
@@ -49,7 +79,15 @@ public class PersonServices {
         entity.setGender(personVO.getGender());
         Person savedPerson = repository.save(entity);
 
-        return DozerMapper.parseObject(savedPerson, PersonVO.class);
+        PersonVO vo = DozerMapper.parseObject(savedPerson, PersonVO.class);
+
+        vo.add(
+                linkTo(
+                        methodOn(PersonController.class).findById(savedPerson.getId())
+                ).withSelfRel()
+        );
+
+        return vo;
     }
 
     public String delete(Long id) {
