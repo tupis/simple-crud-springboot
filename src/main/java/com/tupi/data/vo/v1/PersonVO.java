@@ -1,7 +1,5 @@
 package com.tupi.data.vo.v1;
 
-import com.fasterxml.jackson.annotation.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
