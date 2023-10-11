@@ -1,6 +1,7 @@
 package com.tupi.controllers;
 
 import com.tupi.data.vo.v1.PersonVO;
+import com.tupi.models.Person;
 import com.tupi.services.PersonServices;
 import com.tupi.utils.LogUtil;
 import com.tupi.utils.MediaType;
@@ -39,6 +40,8 @@ public class PersonController {
     public PersonVO create(@RequestBody PersonVO PersonVO) {
         LogUtil<PersonVO> logUtil = new LogUtil<>();
         logUtil.logTudo(PersonVO);
+        PersonVO.setKey(null);
+
         return service.create(PersonVO);
     }
 

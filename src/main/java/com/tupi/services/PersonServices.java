@@ -2,6 +2,7 @@ package com.tupi.services;
 
 import com.tupi.controllers.PersonController;
 import com.tupi.data.vo.v1.PersonVO;
+import com.tupi.exceptions.PersonNotNullException;
 import com.tupi.exceptions.ResourceNotFoundException;
 import com.tupi.mapper.DozerMapper;
 import com.tupi.models.Person;
@@ -52,10 +53,12 @@ public class PersonServices {
         return vos;
     }
 
-    public PersonVO create(PersonVO personVO) {
+    public PersonVO create(PersonVO personVO) throws PersonNotNullException {
         logger.info("Creating one person");
+
+        if(personVO == null) throw new PersonNotNullException();
+
         Person person = DozerMapper.parseObject(personVO, Person.class);
-        person.setId(null);
         Person savedPerson = repository.save(person);
 
         PersonVO vo = DozerMapper.parseObject(savedPerson, PersonVO.class);
@@ -69,7 +72,12 @@ public class PersonServices {
         return vo;
     }
 
-    public PersonVO update(Long id, PersonVO personVO) {
+    public PersonVO update(Long id, PersonVO personVO) throws PersonNotNullException {
+
+        if(id == null) throw new PersonNotNullException("Please send a valid ID");
+
+        if(personVO == null) throw new PersonNotNullException();
+
         logger.info("Updating one person");
         Person entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No record found for this ID!"));
 
