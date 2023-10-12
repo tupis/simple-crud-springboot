@@ -17,6 +17,7 @@
         <java.version>17</java.version>
         <dozzer.version>6.5.2</dozzer.version>
         <flywaydb.version>7.8.0</flywaydb.version>
+        <springdocs.version>2.2.0</springdocs.version>
     </properties>
     <dependencies>
         <dependency>
@@ -48,6 +49,24 @@
             <groupId>com.github.dozermapper</groupId>
             <artifactId>dozer-core</artifactId>
             <version>${dozzer.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdocs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdocs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>${springdocs.version}</version>
         </dependency>
 
         <dependency>
@@ -128,7 +147,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
         </plugins>
     </build>
 
