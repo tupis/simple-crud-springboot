@@ -1,4 +1,4 @@
-package com.tupi.controllers;
+package com.tupi.services;
 
 import com.tupi.data.vo.v1.BooksVO;
 import com.tupi.data.vo.v1.PersonVO;
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface PersonController {
+public interface PersonService {
     List<PersonVO> findAll();
     PersonVO findById(Long id);
     PersonVO create(PersonVO person);

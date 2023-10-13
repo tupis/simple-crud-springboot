@@ -1,13 +1,15 @@
-package com.tupi.services;
+package com.tupi.services.impl;
 
-import com.tupi.controllers.PersonController;
+import com.tupi.controllers.impl.PersonControllerImpl;
 import com.tupi.data.vo.v1.PersonVO;
 import com.tupi.exceptions.PersonNotNullException;
 import com.tupi.exceptions.ResourceNotFoundException;
 import com.tupi.mapper.DozerMapper;
 import com.tupi.models.Person;
 import com.tupi.repositories.PersonRepository;
+import com.tupi.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +19,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
-public class PersonServices {
-    private final Logger logger = Logger.getLogger(PersonServices.class.getName());
+public class PersonServicesImpl implements PersonService {
+    private final Logger logger = Logger.getLogger(PersonServicesImpl.class.getName());
 
     @Autowired
     private PersonRepository repository;
@@ -30,7 +32,7 @@ public class PersonServices {
 
         vo.add(
                 linkTo(
-                        methodOn(PersonController.class).findById(id)
+                        methodOn(PersonControllerImpl.class).findById(id)
                 ).withSelfRel()
         );
 
@@ -45,7 +47,7 @@ public class PersonServices {
         vos.stream().forEach(p ->
                 p.add(
                     linkTo(
-                            methodOn(PersonController.class).findById(p.getKey())
+                            methodOn(PersonControllerImpl.class).findById(p.getKey())
                     ).withSelfRel()
                 )
         );
@@ -65,7 +67,7 @@ public class PersonServices {
 
         vo.add(
                 linkTo(
-                        methodOn(PersonController.class).findById(savedPerson.getId())
+                        methodOn(PersonControllerImpl.class).findById(savedPerson.getId())
                 ).withSelfRel()
         );
 
@@ -91,16 +93,16 @@ public class PersonServices {
 
         vo.add(
                 linkTo(
-                        methodOn(PersonController.class).findById(savedPerson.getId())
+                        methodOn(PersonControllerImpl.class).findById(savedPerson.getId())
                 ).withSelfRel()
         );
 
         return vo;
     }
 
-    public String delete(Long id) {
+    public ResponseEntity<String> deleteById(Long id) {
         repository.deleteById(id);
-        return "Person deleted!";
+        return ResponseEntity.ok().body("Person deleted with success!");
     }
 
 }

@@ -1,14 +1,12 @@
 package com.tupi.services.impl;
 
-import com.tupi.controllers.PersonController;
+import com.tupi.controllers.impl.PersonControllerImpl;
 import com.tupi.data.vo.v1.BooksVO;
 import com.tupi.exceptions.BooksNotFoundException;
 import com.tupi.mapper.DozerMapper;
 import com.tupi.models.Books;
-import com.tupi.models.Person;
 import com.tupi.repositories.BooksRepository;
 import com.tupi.services.BooksService;
-import com.tupi.utils.LogUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +31,7 @@ public class BooksServiceImpl implements BooksService {
         booksVO.stream().forEach(book -> {
             book.add(
                     linkTo(
-                            methodOn(PersonController.class).findById(book.getKey())
+                            methodOn(PersonControllerImpl.class).findById(book.getKey())
                     ).withSelfRel()
             );
         });
@@ -47,7 +45,7 @@ public class BooksServiceImpl implements BooksService {
 
         booksVO.add(
                 linkTo(
-                        methodOn(PersonController.class).findById(id)
+                        methodOn(PersonControllerImpl.class).findById(id)
                 ).withSelfRel()
         );
 
@@ -62,7 +60,7 @@ public class BooksServiceImpl implements BooksService {
 
         booksVO.add(
                 linkTo(
-                        methodOn(PersonController.class).findById(booksVO.getKey())
+                        methodOn(PersonControllerImpl.class).findById(booksVO.getKey())
                 ).withSelfRel()
         );
 
@@ -82,7 +80,7 @@ public class BooksServiceImpl implements BooksService {
 
         booksVO.add(
                 linkTo(
-                        methodOn(PersonController.class).findById(id)
+                        methodOn(PersonControllerImpl.class).findById(id)
                 ).withSelfRel()
         );
 

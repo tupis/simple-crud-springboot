@@ -4,7 +4,7 @@ import com.tupi.data.vo.v1.PersonVO;
 import com.tupi.exceptions.PersonNotNullException;
 import com.tupi.models.Person;
 import com.tupi.repositories.PersonRepository;
-import com.tupi.services.PersonServices;
+import com.tupi.services.impl.PersonServicesImpl;
 import com.tupi.unittests.mapper.mocks.MockPerson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,14 +23,14 @@ import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
-class PersonServicesTest {
+class PersonServicesImplTest {
     MockPerson input;
 
     @Mock
     PersonRepository repository;
 
     @InjectMocks
-    private PersonServices services;
+    private PersonServicesImpl services;
 
     @BeforeEach
     void setUpMocks() {
