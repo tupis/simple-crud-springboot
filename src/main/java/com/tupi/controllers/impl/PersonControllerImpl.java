@@ -110,8 +110,7 @@ public class PersonControllerImpl implements PersonController {
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            },
-            method = "POST"
+            }
     )
     public PersonVO create(@RequestBody PersonVO PersonVO) {
         LogUtil<PersonVO> logUtil = new LogUtil<>();
