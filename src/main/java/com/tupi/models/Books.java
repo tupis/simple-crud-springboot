@@ -29,7 +29,7 @@ public class Books implements Serializable {
     private Date launchDate;
 
     @Column(nullable = false)
-    private double price;
+    private Double price;
 
     public Long getId() {
         return id;
@@ -55,11 +55,11 @@ public class Books implements Serializable {
         this.launchDate = launchDate;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
