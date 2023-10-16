@@ -1,9 +1,11 @@
 package com.tupi.services.impl;
 
-import com.tupi.controllers.impl.PersonControllerImpl;
+import com.tupi.controllers.impl.BooksControllerImpl;
 import com.tupi.data.vo.v1.BooksVO;
 import com.tupi.exceptions.BooksNotFoundException;
+import com.tupi.exceptions.BooksNotNullException;
 import com.tupi.mapper.DozerMapper;
+import com.tupi.mapper.custom.BooksMapper;
 import com.tupi.models.Books;
 import com.tupi.repositories.BooksRepository;
 import com.tupi.services.BooksService;
@@ -31,7 +33,7 @@ public class BooksServiceImpl implements BooksService {
         booksVO.stream().forEach(book -> {
             book.add(
                     linkTo(
-                            methodOn(PersonControllerImpl.class).findById(book.getKey())
+                            methodOn(BooksControllerImpl.class).findById(book.getKey())
                     ).withSelfRel()
             );
         });
@@ -45,7 +47,7 @@ public class BooksServiceImpl implements BooksService {
 
         booksVO.add(
                 linkTo(
-                        methodOn(PersonControllerImpl.class).findById(id)
+                        methodOn(BooksControllerImpl.class).findById(id)
                 ).withSelfRel()
         );
 
@@ -53,26 +55,31 @@ public class BooksServiceImpl implements BooksService {
     }
 
     @Override
-    public BooksVO create(@NotNull BooksVO books) {
-        Books entity = DozerMapper.parseObject(books, Books.class);
+    public BooksVO create(BooksVO books) {
+        if(books == null) throw new BooksNotNullException();
+
+        Books entity = BooksMapper.parserVOToBook(books);
+
         Books savedBook = repository.save(entity);
-        BooksVO booksVO = DozerMapper.parseObject(savedBook, BooksVO.class);
+
+        BooksVO booksVO = BooksMapper.parserBookToVO(savedBook);
 
         booksVO.add(
                 linkTo(
-                        methodOn(PersonControllerImpl.class).findById(booksVO.getKey())
+                        methodOn(BooksControllerImpl.class).findById(booksVO.getKey())
                 ).withSelfRel()
         );
 
         return booksVO;
     }
 
-    public BooksVO update(@NotNull Long id, @NotNull BooksVO books) {
+    public BooksVO update(Long id, BooksVO books) {
         Books entity = new Books();
         entity.setId(books.getKey());
         entity.setAuthor(books.getAuthor());
         entity.setLaunchDate(books.getLaunchDate());
         entity.setPrice(books.getPrice());
+        entity.setTitle(books.getTitle());
 
         Books savedBook = repository.save(entity);
 
@@ -80,7 +87,7 @@ public class BooksServiceImpl implements BooksService {
 
         booksVO.add(
                 linkTo(
-                        methodOn(PersonControllerImpl.class).findById(id)
+                        methodOn(BooksControllerImpl.class).findById(id)
                 ).withSelfRel()
         );
 
