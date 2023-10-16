@@ -1,8 +1,5 @@
 package com.tupi.models;
 
-
-
-
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -30,6 +27,9 @@ public class Books implements Serializable {
 
     @Column(nullable = false)
     private Double price;
+
+    @Column
+    private String title;
 
     public Long getId() {
         return id;
@@ -71,15 +71,12 @@ public class Books implements Serializable {
         this.title = title;
     }
 
-    @Column
-    private String title;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Books books = (Books) o;
-        return Double.compare(price, books.price) == 0 && Objects.equals(id, books.id) && Objects.equals(author, books.author) && Objects.equals(launchDate, books.launchDate) && Objects.equals(title, books.title);
+        return Objects.equals(id, books.id) && Objects.equals(author, books.author) && Objects.equals(launchDate, books.launchDate) && Objects.equals(price, books.price) && Objects.equals(title, books.title);
     }
 
     @Override
