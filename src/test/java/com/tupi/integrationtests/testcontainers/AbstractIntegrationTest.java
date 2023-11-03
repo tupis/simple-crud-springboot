@@ -1,6 +1,7 @@
 package com.tupi.integrationtests.testcontainers;
 
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 
 
 @ContextConfiguration(initializers = AbstractIntegrationTest.Initializer.class)
+@SpringBootApplication(scanBasePackages = "com.tupi")
 public class AbstractIntegrationTest {
         static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
             static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.0");
