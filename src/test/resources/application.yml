@@ -1,6 +1,11 @@
 cors:
   origin:
     patterns: http://localhost:8080,http://localhost:8081,https://tupi.dev
+security:
+  jwt:
+    token:
+      secret-key: 84fds46341fa5e
+      expire-length: 3600000
 server:
   port: 8888
 spring:
