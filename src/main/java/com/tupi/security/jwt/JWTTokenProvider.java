@@ -89,9 +89,9 @@ public class JWTTokenProvider {
         String bearerToken = req.getHeader("Authorization");
 
         if(
-                bearerToken == null &&
-                !bearerToken.startsWith("Bearer ") &&
-                bearerToken.split("Bearer")[1] == null
+            bearerToken == null ||
+            !bearerToken.startsWith("Bearer ") ||
+            bearerToken.split("Bearer")[1] == null
         ) {
             return null;
         }
