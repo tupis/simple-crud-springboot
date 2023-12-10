@@ -5,19 +5,17 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
-@Service
+@Component
 public class JWTTokenFilter extends GenericFilterBean {
-
-    @Autowired
-    private JWTTokenProvider provider;
+//public class JWTTokenFilter extends OncePerRequestFilter {
+    private final JWTTokenProvider provider;
 
     public JWTTokenFilter(JWTTokenProvider provider) {
         this.provider = provider;
@@ -27,14 +25,37 @@ public class JWTTokenFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = provider.resolveToken((HttpServletRequest) request);
 
-        if(token != null && provider.validateToken(token)) {
-            Authentication auth = provider.getAuthentication(token);
-            if(auth != null) {
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+        if(token == null) {
+            chain.doFilter(request, response);
+            return;
         }
 
-        chain.doFilter(request, response);
+        Authentication auth = provider.getAuthentication(token);
+        if(auth == null) {
+            chain.doFilter(request, response);
+            return;
+        }
 
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        chain.doFilter(request, response);
     }
+
+//    @Override
+//    protected void doFilterInternal(
+//            HttpServletRequest request,
+//            HttpServletResponse response,
+//            FilterChain filterChain
+//    ) throws ServletException, IOException {
+//        final String authHeader = request.getHeader("Authorization");
+//        final String jwt;
+//        final String username;
+//
+//        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        jwt = authHeader.substring(7);
+////        username = provider.resolveToken(jwt);
+//    }
 }
