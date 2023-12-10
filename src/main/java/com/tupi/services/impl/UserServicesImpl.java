@@ -64,14 +64,12 @@ public class UserServicesImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("Find one user by name " + username + "!");
 
-        var result = this.repository.findUsersByUserName(username);
+        var result = repository.findUsersByUserName(username);
 
         if(result != null) {
             return result;
         } else {
             throw new UsernameNotFoundException("Username " + username +  "not found!");
         }
-
-
     }
 }
