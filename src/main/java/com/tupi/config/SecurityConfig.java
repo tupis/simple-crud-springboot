@@ -1,6 +1,6 @@
 package com.tupi.config;
 
-import com.tupi.security.jwt.JWTConfigurer;
+import com.tupi.security.jwt.JWTTokenFilter;
 import com.tupi.security.jwt.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -20,6 +21,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 //@Profile({"dev", "test"})
 public class SecurityConfig {
+
+    @Autowired
+    private JWTTokenFilter securityFilter;
 
     private final String [] WHITE_LIST = {
             "/swagger-ui/**",
@@ -54,7 +58,8 @@ public class SecurityConfig {
                         .requestMatchers("/users").denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .apply(new JWTConfigurer(provider));
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+//                .apply(new JWTConfigurer(provider));
 
         return http.build();
     }
