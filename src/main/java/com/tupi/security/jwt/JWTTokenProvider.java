@@ -3,6 +3,7 @@ package com.tupi.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tupi.data.vo.v1.security.TokenVO;
 import jakarta.annotation.PostConstruct;
@@ -16,14 +17,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
 @Service
 public class JWTTokenProvider {
 
-    @Value("${security.jwt.token.secret:secret}")
-    private String secretKey = "secret";
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
 
     @Value("${security.jwt.token.expire-length:3600000}")
     private Long validityInMilliseconds = 3600000L;
@@ -80,8 +83,7 @@ public class JWTTokenProvider {
     }
 
     private DecodedJWT decodedToken(String token) {
-        Algorithm alg = Algorithm.HMAC256(secretKey.getBytes());
-        JWTVerifier verifier = JWT.require(alg).build();
+        JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(token);
     }
 
@@ -96,7 +98,7 @@ public class JWTTokenProvider {
             return null;
         }
 
-        return bearerToken.split("Bearer")[1];
+        return bearerToken.split("Bearer ")[1];
     }
 
     public Boolean validateToken(String token) {
