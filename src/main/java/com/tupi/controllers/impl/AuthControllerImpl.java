@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
@@ -34,6 +31,17 @@ public class AuthControllerImpl implements AuthController {
 
         return ResponseEntity.status(HttpStatus.OK).body(token);
     }
+
+    @Operation(summary = "Create new access token from refresh token")
+    @PutMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(
+            @RequestHeader("Authorization") String refreshToken
+    ) {
+        var result = this.auth.refreshToken(refreshToken);
+
+        return ResponseEntity.status(200).body(result);
+    }
+
 
     private Boolean validateSignInBody(AccountCredentialsVO data) {
         if(data == null) {

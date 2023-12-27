@@ -25,10 +25,16 @@ public class SecurityConfig {
     @Autowired
     private JWTTokenFilter securityFilter;
 
-    private final String [] WHITE_LIST = {
+    private final String[] WHITE_LIST = {
             "/swagger-ui/**",
             "/api-docs/**",
             "/auth/signIn",
+            "/auth/refreshToken"
+    };
+
+    private final String[] authenticadedRequests = {
+            "/api/**",
+            "/auth/refreshToken"
     };
 
     @Autowired
@@ -54,7 +60,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authHttpReq -> authHttpReq
                         .requestMatchers(WHITE_LIST).permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers(authenticadedRequests).authenticated()
                         .requestMatchers("/users").denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

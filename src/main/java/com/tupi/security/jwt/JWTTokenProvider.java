@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ctc.wstx.exc.WstxOutputException;
 import com.tupi.data.vo.v1.security.TokenVO;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class JWTTokenProvider {
@@ -49,8 +48,9 @@ public class JWTTokenProvider {
         var accessToken = getAccessToken(username, roles, now, validity);
         var refreshToken = getRefreshToken(username, roles, now);
 
-        return new TokenVO(username,true, now, validity, accessToken, refreshToken);
+        return new TokenVO(username, true, now, validity, accessToken, refreshToken);
     }
+
     private String getAccessToken(String username, String[] roles, Date now, Date validity) {
         String issuerURL = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         return JWT.create()
@@ -90,10 +90,10 @@ public class JWTTokenProvider {
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
 
-        if(
-            bearerToken == null ||
-            !bearerToken.startsWith("Bearer ") ||
-            bearerToken.split("Bearer")[1] == null
+        if (
+                bearerToken == null ||
+                        !bearerToken.startsWith("Bearer ") ||
+                        bearerToken.split("Bearer")[1] == null
         ) {
             return null;
         }
@@ -104,6 +104,15 @@ public class JWTTokenProvider {
     public Boolean validateToken(String token) {
         DecodedJWT decoded = decodedToken(token);
         return !decoded.getExpiresAt().before(new Date());
+    }
+
+    public TokenVO refreshToken(String refreshToken) {
+        DecodedJWT decoded = decodedToken(refreshToken);
+
+        var username = decoded.getSubject();
+        String[] roles = decoded.getClaim("roles").asArray(String.class).clone();
+
+        return createAccessToken(username, roles);
     }
 
 }

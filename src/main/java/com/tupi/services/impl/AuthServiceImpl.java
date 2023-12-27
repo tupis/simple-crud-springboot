@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -49,5 +50,28 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid username/password supplied!");
         }
 
+    }
+
+    public ResponseEntity<?> refreshToken(String refreshToken) {
+        var token = this.validateRefreshToken(refreshToken);
+
+        if(token == null) {
+            return ResponseEntity.status(400).body("Refresh token is invalid!");
+        };
+
+        var result = this.jwtTokenProvider.refreshToken(token);
+        return ResponseEntity.status(200).body(result);
+    }
+
+    private String validateRefreshToken(String token) {
+        if(token.isBlank()) {
+            return null;
+        }
+
+        if(token.split("Bearer ")[1] == null || Objects.equals(token.split("Bearer ")[1], ""))  {
+            return null;
+        }
+
+        return token.split("Bearer ")[1].strip();
     }
 }
