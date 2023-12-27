@@ -3,6 +3,8 @@ package com.tupi.integrationtests.controllers.withjson;
 import com.tupi.configs.TestConfigs;
 import com.tupi.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.tupi.integrationtests.vo.PersonVO;
+import com.tupi.integrationtests.vo.security.AccountCredentialsVO;
+import com.tupi.integrationtests.vo.security.TokenVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -25,6 +27,7 @@ public class PersonControllerIntegrationTests extends AbstractIntegrationTest {
     private static RequestSpecification requestSpecification;
     private static ObjectMapper mapper;
     private static PersonVO person;
+    private static String accessToken;
 
     @BeforeAll
     public static void Setup() {
@@ -32,21 +35,46 @@ public class PersonControllerIntegrationTests extends AbstractIntegrationTest {
         mapper = objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         person = new PersonVO();
+    }
 
+    @Test
+    @Order(0)
+    public void auth() throws IOException {
+        AccountCredentialsVO user = new AccountCredentialsVO("tupi", "admin123");
+
+//        requestSpecification = new RequestSpecBuilder()
+//                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_TUPI)
+//                .setBasePath("/auth/signIn")
+//                .setPort(TestConfigs.SERVER_PORT)
+//                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+//                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+//                .build();
+
+        var accessToken = given()
+                .basePath("/auth/signIn")
+                .port(TestConfigs.SERVER_PORT)
+                .body(user)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(TokenVO.class)
+                .getAccessToken();
+
+        System.out.println("Access token: " + accessToken);
+
+
+        this.accessToken = accessToken;
     }
 
     @Test
     @Order(1)
     public void testCreate() throws IOException {
-        mockPerson();
-
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_TUPI)
-                .setBasePath("/api/v1/person")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+        this.mockPerson();
+        this.setSpecification("/api/v1/person");
 
         var content = given()
                 .spec(requestSpecification)
@@ -81,13 +109,7 @@ public class PersonControllerIntegrationTests extends AbstractIntegrationTest {
     @Test
     @Order(2)
     public void testCreateWithWrongOrigin() throws IOException {
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_WRONG)
-                .setBasePath("/api/v1/person")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+        this.setSpecification("/api/v1/person", TestConfigs.ORIGIN_WRONG);
 
         var content = given()
                 .spec(requestSpecification)
@@ -109,13 +131,7 @@ public class PersonControllerIntegrationTests extends AbstractIntegrationTest {
     @Test
     @Order(3)
     public void testFindById() throws IOException {
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_TUPI)
-                .setBasePath("/api/v1/person")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+        this.setSpecification("/api/v1/person");
 
         var content = given()
                 .spec(requestSpecification)
@@ -150,13 +166,7 @@ public class PersonControllerIntegrationTests extends AbstractIntegrationTest {
     @Test
     @Order(4)
     public void testFindAll() throws IOException {
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_TUPI)
-                .setBasePath("/api/v1/person/findAll")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+        this.setSpecification("/api/v1/person/findAll");
 
         var content = given()
                 .spec(requestSpecification)
@@ -195,6 +205,22 @@ public class PersonControllerIntegrationTests extends AbstractIntegrationTest {
 
     private void mockPerson() {
         mockPerson(1L);
+    }
+
+    private void setSpecification(String basePath) {
+        this.setSpecification(basePath, TestConfigs.ORIGIN_TUPI);
+    }
+
+    private void setSpecification(String basePath, String origin) {
+
+        requestSpecification = new RequestSpecBuilder()
+                .addHeader(TestConfigs.HEADER_PARAM_ACCESS_AUTHORIZATION, "Bearer " + this.accessToken)
+                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, origin)
+                .setBasePath(basePath)
+                .setPort(TestConfigs.SERVER_PORT)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
     }
 
 }
