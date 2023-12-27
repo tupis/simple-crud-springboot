@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 @Tag(name = "Authentication Endpoint")
@@ -34,11 +35,11 @@ public class AuthControllerImpl implements AuthController {
 
     @Operation(summary = "Create new access token from refresh token")
     @PutMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(
-            @RequestHeader("Authorization") String refreshToken
-    ) {
-        var result = this.auth.refreshToken(refreshToken);
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+        var token = validateRefreshToken(refreshToken);
+        if(token == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid token");
 
+        var result = this.auth.refreshToken(token);
         return ResponseEntity.status(200).body(result);
     }
 
@@ -73,5 +74,17 @@ public class AuthControllerImpl implements AuthController {
         }
 
         return true;
+    }
+
+    private String validateRefreshToken(String token) {
+        if(token.isBlank()) {
+            return null;
+        }
+
+        if(token.split("Bearer ")[1] == null || Objects.equals(token.split("Bearer ")[1], ""))  {
+            return null;
+        }
+
+        return token.split("Bearer ")[1].strip();
     }
 }
