@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository repository;
 
-    public ResponseEntity<TokenVO> signIn(AccountCredentialsVO data) {
+    public TokenVO signIn(AccountCredentialsVO data) {
         try {
             var username = data.getUsername();
             var password = data.getPassword();
@@ -43,35 +43,15 @@ public class AuthServiceImpl implements AuthService {
                 throw new UsernameNotFoundException("Username not found!");
             }
 
-            var tokenResponse = jwtTokenProvider.createAccessToken(username, user.getRoles().toArray(new String[0]));
-
-            return ResponseEntity.ok(tokenResponse);
+            return jwtTokenProvider.createAccessToken(username, user.getRoles().toArray(new String[0]));
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid username/password supplied!");
         }
 
     }
 
-    public ResponseEntity<?> refreshToken(String refreshToken) {
-        var token = this.validateRefreshToken(refreshToken);
-
-        if(token == null) {
-            return ResponseEntity.status(400).body("Refresh token is invalid!");
-        };
-
-        var result = this.jwtTokenProvider.refreshToken(token);
-        return ResponseEntity.status(200).body(result);
+    public TokenVO refreshToken(String token) {
+        return this.jwtTokenProvider.refreshToken(token);
     }
 
-    private String validateRefreshToken(String token) {
-        if(token.isBlank()) {
-            return null;
-        }
-
-        if(token.split("Bearer ")[1] == null || Objects.equals(token.split("Bearer ")[1], ""))  {
-            return null;
-        }
-
-        return token.split("Bearer ")[1].strip();
-    }
 }
